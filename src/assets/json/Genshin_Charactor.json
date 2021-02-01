@@ -1,0 +1,22 @@
+{
+  "userinfo":[
+    {"uid":"1","username":"Sora","usersex":"girl","userage":"16"},
+    {"uid":"2","username":"Tartaglia","usersex":"man","userage":"23"},
+    {"uid":"3","username":"Diona","usersex":"girl","userage":"10"},
+    {"uid":"4","username":"Klee","usersex":"girl","userage":"10"},
+    {"uid":"5","username":"Venti","usersex":"boy","userage":"17"},
+    {"uid":"6","username":"Mona","usersex":"girl","userage":"15"},
+    {"uid":"7","username":"Diluc","usersex":"man","userage":"26"},
+    {"uid":"8","username":"Jean","usersex":"woman","userage":"25"},
+    {"uid":"9","username":"Sucrose","usersex":"girl","userage":"16"},
+    {"uid":"10","username":"Noelle","usersex":"girl","userage":"17"},
+    {"uid":"11","username":"Bennett","usersex":"boy","userage":"14"},
+    {"uid":"12","username":"Fischl","usersex":"girl","userage":"15"},
+    {"uid":"13","username":"Razor","usersex":"boy","userage":"13"},
+    {"uid":"14","username":"Barbara","usersex":"girl","userage":"15"},
+    {"uid":"15","username":"Lisa","usersex":"woman","userage":"22"},
+    {"uid":"16","username":"Kaeya","usersex":"man","userage":"23"},
+    {"uid":"17","username":"Amber","usersex":"girl","userage":"16"},
+    {"uid":"18","username":"Aperdo","usersex":"boy","userage":"17"}
+  ]
+}

@@ -1,0 +1,25 @@
+#returnTop{
+  font-size: 24px;
+  right:50px;
+  bottom: 50px;
+  position: fixed;
+  z-index: 999;
+}
+#ProgressBar{
+  width: 1920px;
+  height: 5px;
+  position: fixed;
+  background-color: #fff;
+}
+
+#ProgressBar #Progress{
+  width: 0px;
+  height: 5px;
+  position: fixed;
+  background-color: #66ccff;
+}
+
+#foot-container{
+  text-align: center;
+  color: #fff;
+}
