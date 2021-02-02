@@ -5,15 +5,23 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "start": "node index.js",
+    "server": "nodemon index.js --ignore client"
   },
   "dependencies": {
+    "@types/jquery.cookie": "^1.4.31",
+    "animate": "^1.0.0",
     "axios": "^0.21.1",
+    "bootstrap": "^4.6.0",
     "core-js": "^3.6.5",
     "jquery": "^3.5.1",
     "layui-src": "^2.5.8",
+    "popper.js": "^1.16.1",
     "qs": "^6.9.6",
+    "toastr": "^2.1.4",
     "vue": "^3.0.0",
+    "vue-cookies": "^1.7.4",
     "vue-router": "^4.0.0-0",
     "webpack": "^4.0.0"
   },

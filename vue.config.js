@@ -6,7 +6,7 @@ module.exports={
       port:8088,
         proxy:{
           '/api':{
-              target:'http//localhost:8081/',
+              target:'http://localhost:8080/',
               secure:false,
               ws:true,
               changeOrigin:true,
@@ -14,7 +14,7 @@ module.exports={
                   '^/api':''
               }
           }
-        }
+        },
     },
     configureWebpack:{
         plugins: [
