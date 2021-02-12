@@ -2,11 +2,11 @@ const webpack = require('webpack');
 
 module.exports={
     devServer: {
-      host:"localhost",
+      host:"0.0.0.0",
       port:8088,
         proxy:{
           '/api':{
-              target:'http://localhost:8080/',
+              target:'http://localhost:8000/',
               secure:false,
               ws:true,
               changeOrigin:true,

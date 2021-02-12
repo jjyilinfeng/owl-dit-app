@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <div class="MsgBox">
+    <div :class="['MsgBox', 'animate__animated', MsgBoxSet?'animate__zoomIn':'animate__zoomOut']" >
       <button type="button" id="testButton" class="btn btn-primary btn-lg" @click="nextStep" style="display:none">下一步</button>
 
       <div class="userGenderChoose">
@@ -36,15 +36,15 @@
   </div>
 </template>
 <script>
-import MsgBox from "@/components/MsgBox"
 import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap/dist/js/bootstrap.js"
+import "animate.css/animate.min.css"
 
 export default {
   name:"AboutMe",
-  components: {MsgBox},
   data() {
     return {
+      MsgBoxSet:false,
       userGender: ""
     }
   },/*数据*/
@@ -57,20 +57,20 @@ export default {
       $(".userGenderChoose").fadeIn();
     },
     setMsgBox:function(){
-      $(".MsgBox").css("display","block")
-      $(".MsgBox").animate({"width":"800px","height":"600px"},800);
+      this.MsgBoxSet = true;
+      $(".MsgBox").css("display","block");
       setTimeout(function(){
-        $("#testButton").fadeIn();
+        $("#testButton").fadeIn(500);
       },1000)
     },
     closeMsgBox:function(){
-      $(".MsgBox").children().fadeOut();
-      setTimeout(function(){
-        $(".MsgBox").animate({"width":"60px","height":"60px"},600);
+      $(".MsgBox").children().fadeOut(500);
+      setTimeout(() =>{
+        this.MsgBoxSet = false;
         setTimeout(function(){
           $(".MsgBox").css("display","none");
-        },600)
-      },1000)
+        },500)
+      },500)
     }
   },/*执行触发函数*/
   computed: {},/*动态计算属性*/
@@ -81,8 +81,8 @@ export default {
 .MsgBox{
   margin-left: 560px;
   margin-top: 200px;
-  width: 60px;
-  height: 60px;
+  width: 800px;
+  height: 600px;
   padding: 30px;
   border-radius: 30px;
   box-shadow: 2px 2px 5px #000;

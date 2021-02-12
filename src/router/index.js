@@ -16,9 +16,24 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: () => import('../views/login.vue')
+    path: '/userAccount',
+    name: '登录注册',
+    component: () => import('../views/UserAccount.vue')
+  },
+  {
+    path: '/welcomePage',
+    name: '欢迎',
+    component: () => import('../views/welcomePage.vue')
+  },
+  {
+    path: '/test',
+    name: '测试',
+    component: () => import('../views/Test.vue')
+  },
+  {
+    path:'/index',
+    name:'主页',
+    component: ()=> import('../views/Index.vue')
   }
 ]
 

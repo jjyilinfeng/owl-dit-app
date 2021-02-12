@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
+    <owl-blink-eyes/>
     <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div>
   {{testVar}}
@@ -9,10 +9,12 @@
 <script>
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue'
+import OwlBlinkEyes from "@/components/items/owlBlinkEyes";
 
 export default {
   name: 'Home',
   components: {
+    OwlBlinkEyes,
     HelloWorld
   },
   data() {
