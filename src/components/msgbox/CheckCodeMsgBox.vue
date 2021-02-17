@@ -134,11 +134,15 @@ export default {
 
 <style scoped>
 .msgBox{
-  margin-left: 710px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  margin: auto;
   width: 500px;
   height: 500px;
   z-index: 9999;
-  background-color: #fff;
+  background-color: rgba(255,255,255,0.9);
   text-align: center;
   box-shadow: 2px 2px 2px 2px #66ccff;
   border-radius: 30px 30px 30px 30px;

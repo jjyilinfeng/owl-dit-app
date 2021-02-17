@@ -1,17 +1,17 @@
 <template>
   <div class="user-account-backgroundImg">
     <img id="user-account-bgi" src="../assets/img/backgroundImg/backgroundImg_Flower.jpeg" alt="背景图片"
-         style="display: none"/>
+         style="display: block"/>
   </div>
 
-  <div class="user-account-message-boxes">
+  <div class="user-account-message-boxes" style="padding-top: 50px">
     <check-code-msg-box :user-info="userInfo"
                         :class="['animate__animated',msgBoxAnimateFlag?'animate__zoomIn':'animate__zoomOut']"
                         :style="{'display':msgBoxDisFlag?'block':'none'}"
                         @jumpToRegister="ctr" @jumpToLogin="ctl" />
   </div>
 
-  <div :class="['user-account-boxes']">
+  <div :class="['user-account-boxes']" style="padding-top: 50px">
     <login :class="['animate__animated',loginAnimateFlag?'animate__zoomIn':'animate__zoomOut']"
            id="user-account-boxes-login"  :style="{'display':loginDisFlag?'block':'none'}"
            @jumpToRegister="ltr" @jumpToCheckCode="ltc"/>
@@ -68,7 +68,7 @@ export default {
       toastr.info(this.$route.params.message);
 
     }
-    if(sendMessage === "登出成功"){
+    if(sendMessage === "登出成功" || sendMessage === '您还没有登录'){
       location.reload();
     }
     else{

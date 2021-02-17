@@ -1,12 +1,14 @@
 <template>
   <ul class="layui-nav" style="text-align: center">
-    <li class="layui-nav-item" style=""><a href="">最新活动</a></li>
+
+    <li class="layui-nav-item layui-this"><a @click="showMainIndex">
+      <i class="layui-icon">&#xe68e;</i>用户主页</a></li>
     <li class="layui-nav-item">
       <div class="navbar-form navbar-left" role="search" style="margin: 0">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search">
+          <input type="text" v-model="searchWord" @focus="showSearchBox" class="form-control" placeholder="Search">
         </div>
-        <button type="button" class="btn btn-success">
+        <button type="button" @click="search" class="btn btn-success">
           <span class="glyphicon glyphicon-search"></span>    搜索
         </button>
       </div>
@@ -14,26 +16,31 @@
     <li class="layui-nav-item">
       <a><img :src="'/api/static/img/userFace/'+userFaceSrc" alt="头像" class="layui-nav-img">{{userName}}</a>
       <dl class="layui-nav-child" style="padding: 10px">
-        <dd><a @click="showMainIndex">用户主页</a></dd>
         <dd><a @click="showUserInfoBoxes">用户信息</a></dd>
-        <dd><a href="">安全信息</a></dd>
+        <dd><a @click="showUserSafeInfoBox">安全信息</a></dd>
         <dd><a @click="logOut">登出</a></dd>
       </dl>
     </li>
 
     <li class="layui-nav-item">
-      <a>消息</a>
+      <span v-show="unReadInfo['unReadPraise']+unReadInfo['unReadComment']>0" class="layui-badge-dot layui-bg-orange" style="left: 4px"></span>
+      <a>
+        <i class="layui-icon">&#xe667;</i>消息
+      </a>
       <dl class="layui-nav-child" style="padding: 10px">
-        <dd><a href="">收到的赞</a></dd>
-        <dd><a href="">回复消息</a></dd>
-        <dd><a href="">留言板</a></dd>
+        <dd><a>收到的赞
+          <span v-show="unReadInfo['unReadPraise']>0" class="layui-badge layui-bg-orange" style="right: -12px">{{ unReadInfo['unReadPraise'] }}</span>
+        </a></dd>
+        <dd><a>回复消息</a><span v-show="unReadInfo['unReadComment']>0" class="layui-badge layui-bg-orange" style="right: -12px">{{ unReadInfo['unReadComment'] }}</span></dd>
+        <dd><a>留言板</a><span class="layui-badge layui-bg-orange" style="right: -12px">99+</span></dd>
       </dl>
     </li>
-    <li class="layui-nav-item"><a href="">好友</a></li>
-    <li class="layui-nav-item"><a href="">收藏</a></li>
+    <li class="layui-nav-item"><a @click="showFriendBox"><i class="layui-icon">&#xe612;</i>好友</a></li>
+    <li class="layui-nav-item"><a href=""><i class="layui-icon">&#xe600;</i>收藏</a></li>
     <li class="layui-nav-item">
-      <a>设置</a>
+      <a><i class="layui-icon">&#xe716;</i>设置</a>
       <dl class="layui-nav-child" style="padding: 10px">
+        <dd><a @click="showSetBGI">设置背景图</a></dd>
         <dd>
           <div class="demo-box-content" @click="switchShowBgi">
             <span class="switch-font">展示首页</span>
@@ -48,17 +55,22 @@
 <script>
 import "animate.css"
 import axios from "axios";
+import Cookie from "js-cookie"
 export default {
   name: "Header",
+  watch:{
+
+  },
   props:{
     userName:String,
-    userFaceSrc:String
+    userFaceSrc:String,
   },
   data() {
     return {
       switches:{
         showBgiSwitch:false
-      }
+      },
+      searchWord:"",
     }
   },
   mounted() {
@@ -77,7 +89,11 @@ export default {
     });
   },
   methods:{
+    fun(){
+      console.log(this.$store.state.unReadInfo);
+    },
     logOut:function (){
+      Cookie.remove("userName-idx");
       this.$router.push({
         name:"登录注册",
         params:{
@@ -88,9 +104,24 @@ export default {
     showUserInfoBoxes:function(){
       this.$emit("showUserInfoBox","展示用户信息");
     },
+    showUserSafeInfoBox:function (){
+      this.$emit("showUserSafeInfoBox","展示用户安全信息");
+    },
     showMainIndex:function (){
-      console.log("in");
       this.$emit("showMainIndex","展示用户主页");
+    },
+    showSearchBox:function (){
+      this.$emit("showSearchBox","展示搜索页");
+    },
+    showFriendBox(){
+      this.$emit("showFriendBox","展示朋友页");
+    },
+    showSetBGI(){
+      this.$emit("showSetBGI","设置背景图");
+    },
+    search:function(){
+      this.$store.commit("changeSearchWord",this.searchWord)
+      this.$emit("search",this.searchWord);
     },
     switchShowBgi:function (){
       if(this.switches['showBgiSwitch'] === false){
@@ -103,6 +134,20 @@ export default {
       }
     },
 
+  },
+  computed:{
+    unReadInfo(){
+      let pra=this.$store.state.unReadInfo['unReadPraise'].length,
+          com=this.$store.state.unReadInfo['unReadComment'].length;
+
+      pra>99?pra='99+':pra;
+      com>99?com='99+':com;
+
+      return{
+        'unReadPraise':pra,
+        'unReadComment':com
+      }
+    }
   }
 }
 </script>

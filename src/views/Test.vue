@@ -1,15 +1,21 @@
 <template>
-<user-safe-information-box/>
+  <div id="example-circle-container"/>
 </template>
 <script>
+
 import "animate.css";
 import UserInformationBox from "../components/boxes/indexBoxes/UserInformationBox";
 import axios from "axios";
 import ImgSetBigger from "@/components/msgbox/ImgSetBigger";
 import UserSafeInformationBox from "@/components/boxes/indexBoxes/UserSafeInformationBox";
+import PostBox from "@/components/boxes/indexBoxes/middleBox/PostBox";
+import UserCardBox from "@/components/msgbox/userCardBox";
+import SearchBox from "@/components/boxes/indexBoxes/searchBox";
+import ProgressBar from "progressbar.js";
+
 export default {
   name: "Test",
-  components: {UserSafeInformationBox, ImgSetBigger, UserInformationBox},
+  components: {SearchBox, UserCardBox, PostBox, UserSafeInformationBox, ImgSetBigger, UserInformationBox},
   data(){
     return{
       msgBoxDis:false,
@@ -19,15 +25,82 @@ export default {
     }
   },
   mounted() {
-    let switches = {};
-    let switchConfig = {
-      'demo-default-1': {},
-    }
+    /*
+* 结论先行：一般显示的效果，strokeWidth和trailWidth这2个的值，只需要设置strokeWidth: 1 即可。
+* 原因：
+* strokeWidth的值number类型，表示跟路径的高度占容器的百分比，
+*   所以，数值为1就已经占满容器的高度，>1会有副作用，下面会介绍。
+* trailWidth的值number类型，表示未填充路径的高度占容器的百分比，
+*   如果不设置，默认等于strokeWidth的值，并且会被strokeWidth影响到：
+*   所以它最终的值：trailWidth=(trailWidth/strokeWidth)*height（height为容器高度）
+* 也就是说，strokeWidth和trailWidth的值同时设置，且不相等时，trailWidth的值可能不会如预期效果显示。
+* */
+    let container = document.getElementById("example-circle-container");
+    let bar = new ProgressBar.Line("#example-circle-container", {
+      strokeWidth: 1, // 跟踪路径的高度
+      easing: 'easeInOut',  // 运动形式，默认是linear（匀速运动），easeInOut代表慢-快-慢，该配置项具体可以参照CSS3中transition的过渡形式
+      duration: 5000,  // 走完整体时间（ms）
+      color: 'salmon',  // 跟踪路径颜色（单词，16进制，rgb都可以）
+      trailColor: 'white',   // 未填充路径颜色（同上）
+      trailWidth: 1,  // 未填充路径的高度
+      svgStyle: {width: '100%', height: '100%'},   // 2个路径整体的宽高
+      text: {   // 显示百分比文字的样式，最终生成放文字内容的容器是一个div
+        // className可以指定文字容器的class名称，但是注意，所有在配置项style中写的样式都会转为内联样式，
+        // 并且像color这种不设置，会继承其他配置项的样式，也会设置为内联样式。
+        className: 'text-color',
+        // 百分比文字的样式
+        style: {
+          color: 'green',   // 不设置的话，继承跟踪路径颜色
+          position: 'absolute',
+          textAlign: 'right',
+          top: '0',
+          padding: 0,
+          margin: 0,
+          // 如果要设置transform，直接设置，亲测好像不行，只能按照官网给出的写法。
+          transform: {
+            prefix: true,  // 自动加浏览器前缀
+            value: 'translate(-100%, 70%)'
+          }
+        },
+        // 一旦上面的style选项中写了样式，则自动会给容器添加position: relative;
+        //（我觉得主要考虑的是文字的位置，一般在设置时，使用定位更方便一点，所以才会自动添加），
+        // 可以通过设置下面这个属性为false，禁止自动给容器添加。
+        autoStyleContainer: false,
+      },
+      // 下面三个配置项是配合使用的。
+      // from指定进度条（根据上面所列配置项指定）开始的样式，to指定结束的样式。样式的变化自动会有过渡效果。
+      // 这个demo中，只展示了颜色的变化，可以同时指定多个样式，比如还可以指定width的渐变等等。
+      // step，第一个参数代表的就是管理from和to中样式的状态对象，根据state.color应该就很好理解了。
+      //   第二个参数，就是实例对象（JavaScript代码最顶部生成的那个）
+      from: {color: '#FFEA82'},
+      to: {color: '#ED6A5A'},
+      step: (state, bar) => {
+        // 下面的bar.xxx都是在官网中介绍有案例使用的属性。
+        // 设置跟踪路径颜色变化，颜色会根据from 和to 的渐变
+        bar.path.setAttribute('stroke', state.color);
+        // 设置百分比文字可以随着，跟随路径的不断填充而实时变化。
+        // bar.setText(Math.round(bar.value() * 100) + ' %');
+        // 我为了实现当进度条走到一定距离时，在显示文字，所以加了一个判断
+        let value = Math.round(bar.value() * 100);
+        if (value <= 5) {
+          bar.setText('');
+        } else {
+          bar.setText(value+'%');
+        }
+        // 下面这个设置，主要是想实现文字的位置随着进度条的增长，跟着变化。
+        bar.text.style.left = Math.round(bar.value() * 100) + '%';
 
-    Object.keys(switchConfig).forEach(function (key) {
-      switches[key] = new Switch(document.querySelector('.' + key),switchConfig[key]);
+      }
     });
 
+    // animate方法，用来启动进度条动画。
+    // 第一个参数 0.0 ~ 1.0 指定动画结束的百分比，一般都为1，进度条就会跑完整个矩形。
+    // 第二个参数，配置项（这里没有写，感觉有点多余），如果配置的话，会重写上面的配置项，
+    //   比如{duration: 4000} 会重写上面的duration。
+    // 第三个参数，回调函数，在动画执行完成之后执行，也就是进度条走完。这里放一些处理逻辑。
+    bar.animate(1, function () {
+      console.log('动画结束，萌萌哒')
+    });
   },
   methods:{
     closeMsgBox:function (){

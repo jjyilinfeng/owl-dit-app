@@ -1,24 +1,13 @@
-# vue_projcet
 
-## Project setup
+## 这里是OWL-DIT小项目的API接口
+###目前更新的功能有
 ```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
+1.用户名注册、登录
+2.邮件验证
+3.用户信息头像更换
+4.用户安全信息更换
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
+希望你能玩的开心
+##PS:需要OWL-DIT API接口才能完整运行
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

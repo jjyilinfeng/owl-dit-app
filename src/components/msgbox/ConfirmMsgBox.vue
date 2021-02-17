@@ -11,7 +11,7 @@
       </span>
     </div>
     <div class="MsgBoxFoot">
-      <button class="btn btn-success" style="margin-right: 20px;" @click="clickEvent">确认</button>
+      <button class="btn btn-success" style="margin-right: 20px;" @click="clickEvent(eventData)">确认</button>
       <button class="btn btn-danger" @click="cancel">取消</button>
     </div>
   </div>
@@ -23,7 +23,8 @@ export default {
   props:{
     titleMsg:String,
     bodyMsg:String,
-    clickEvent:Function
+    clickEvent:Function,
+    eventData:String,
   },
   emits:{
     "cancel":"取消"
@@ -50,6 +51,12 @@ export default {
   border-radius: 20px;
   box-shadow: 1px 1px 3px #000;
   background-color: #fff;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  margin: auto;
+  position: fixed;
   z-index: 9999;
 }
 

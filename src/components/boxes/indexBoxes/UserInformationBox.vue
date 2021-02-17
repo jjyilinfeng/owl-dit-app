@@ -15,7 +15,7 @@
       </div>
       <div class="input-group input-group-lg">
         <span class="input-group-addon">昵称</span>
-        <input type="text" class="form-control" @blur="refreshBar" v-model="userInformation.userNickName" maxlength="15">
+        <input type="text" class="form-control" placeholder="会显示到名片上（○｀ 3′○）" @blur="refreshBar" v-model="userInformation.userNickName" maxlength="15">
       </div>
       <div class="input-group input-group-lg">
         <span class="input-group-addon">性别</span>
@@ -27,16 +27,16 @@
           </select>
         </div>
         <span class="input-group-addon" >年龄</span>
-        <input type="text" class="form-control" @blur="refreshBar" v-model="userInformation.userAge" maxlength="3">
+        <input type="text" placeholder="永远的18岁╰(*°▽°*)╯" class="form-control" @blur="refreshBar" v-model="userInformation.userAge" maxlength="3">
       </div>
 
       <div class="input-group input-group-lg">
         <span class="input-group-addon">出生日期</span>
-        <input type="date" class="form-control"  @blur="refreshBar" v-model="userInformation.userBirthday">
+        <input type="date" placeholder="w(ﾟДﾟ)w" class="form-control"  @blur="refreshBar" v-model="userInformation.userBirthday">
       </div>
       <div class="input-group input-group-lg" style="height: 100px">
         <span class="input-group-addon">签名</span>
-        <textarea  class="form-control" placeholder="这里空空的" @blur="refreshBar" v-model="userInformation.userSign" style="height: 100px">
+        <textarea  class="form-control" placeholder="这个人很懒，还什么都没有写(；′⌒`)" @blur="refreshBar" v-model="userInformation.userSign" style="height: 100px">
         </textarea>
           </div>
       <button class="btn btn-success btn-lg" @click="saveData">保存</button>
@@ -61,6 +61,8 @@ export default {
     userInformationNew:{
       handler(newName, oldName) {
         this.userInformation = newName;
+        this.refreshBar();
+        this.userFace = this.userInformation['userFaceUuid'];
       },
     },
     userFaceSrc:{
@@ -71,8 +73,6 @@ export default {
   },
   data() {
     return {
-
-
       userInformation:{
         'userName':"",
         'userNickName':"",
@@ -82,8 +82,6 @@ export default {
         'userSign':""
       },
       userFace:"",
-
-
     }
   },
   mounted() {
@@ -104,7 +102,6 @@ export default {
           _this.userFace = data;
           //上传的图片地址传给主页
           _this.$emit("updateUserFaceSrc",res.data);
-
           let params = new URLSearchParams();
           params.append("UUID",res.data)
           params.append("userName",_this.userInformation['userName'])

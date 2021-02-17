@@ -209,21 +209,23 @@ export default {
 
 
     getMailCode:function(){
-      if(this.usernameGate && this.userPasswordGate && this.userEmailGate){
-        this.checkCodeConfirm = getCode(6);
-        this.$emit("jumpToCheckCode",this.userMsg("checkRegister"))
-        axios.post("/api/user/sendCheckCode", this.userMsg("registerCheck"))
-            // eslint-disable-next-line no-unused-vars
-            .then(res => {
-              toastr.warning("验证码邮件已经成功发送至您的邮箱，请注意查收");
-            })
-            .catch(err => {
-              console.error(err);
-            })
-      }
-      else{
-        toastr.warning("信息填写不正确")
-      }
+      setTimeout(()=>{
+        if(this.usernameGate && this.userPasswordGate && this.userEmailGate){
+          this.checkCodeConfirm = getCode(6);
+          this.$emit("jumpToCheckCode",this.userMsg("checkRegister"))
+          axios.post("/api/user/sendCheckCode", this.userMsg("registerCheck"))
+              // eslint-disable-next-line no-unused-vars
+              .then(res => {
+                toastr.warning("验证码邮件已经成功发送至您的邮箱，请注意查收");
+              })
+              .catch(err => {
+                console.error(err);
+              })
+        }
+        else{
+          toastr.warning("信息填写不正确")
+        }
+      },100)
     },
 
 

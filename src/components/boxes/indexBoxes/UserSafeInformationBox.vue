@@ -14,7 +14,7 @@
     <div id="step1" style="margin-top: 20px">
       <h1>您的邮箱为{{userEmailChaos}}</h1>
       <h3>请牢记您的邮箱，您的邮箱的安全即是您的账号的安全</h3>
-      <div class="btn-toolbar" role="toolbar" style="margin-left:120px">
+      <div class="btn-toolbar" role="toolbar" style="margin-left:120px;margin-top: 50px">
         <div class="btn-group">
           <button type="button" class="btn btn-info btn-lg" @click="resetMail">重置我的邮箱</button>
         </div>
@@ -22,9 +22,28 @@
           <button class="btn btn-success btn-lg" @click="changePassword" >修改我的密码</button>
         </div>
       </div>
+      <button class="btn btn-warning btn-lg" @click="checkUserIp" style="margin-top: 50px">检查我的登录IP</button>
 
     </div>
     <!-- step1 选择修改的类型end-->
+
+    <!-- 用户IP界面-->
+    <div id="step-userIp">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th>登录的IP</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="Ip in userIp">
+          <td>{{Ip['userIp']}}</td>
+        </tr>
+        </tbody>
+      </table>
+      <button class="btn btn-info btn-lg" @click="backToMain">返回</button>
+    </div>
+    <!-- 用户IP界面END-->
 
     <!-- step2 验证邮箱-->
     <div id="step2">
@@ -135,11 +154,10 @@ import toastr from "toastr"
 export default {
   name: "UserSafeInformationBox",
   props:{
-
+    userName:String,
   },
   data() {
     return {
-      userName:"ZhongSir",
       userEmail:"",
       newEmail:"",
       step: 0,
@@ -150,16 +168,21 @@ export default {
       inputNewPassword:"",
       confirmNewPassword:"",
       inputNewMail:"",
+
+      userIp:[],
     }
   },/*数据*/
   mounted(){
-    axios.post("/api/user/queryUserSafeInfo",Qs.stringify({'userName':this.userName}))
-        .then(res =>{
-          this.userEmail = res.data.data['userEmail'];
-        })
-        .catch(err =>{
-          console.error(err);
-        })
+    setTimeout(()=>{
+      axios.post("/api/user/queryUserSafeInfo",Qs.stringify({'userName':this.userName}))
+          .then(res =>{
+            this.userEmail = res.data.data['userEmail'];
+          })
+          .catch(err =>{
+            console.error(err);
+          })
+    },200)
+
   },/*自动加载函数*/
   methods: {
     doLogout: function () {
@@ -180,35 +203,56 @@ export default {
       if(this.step < 1){
         if(action === "step"){
           $("#step"+(this.step+1)).fadeOut();
-          $("#step"+(this.step+2)).fadeIn();
+            $("#step"+(this.step+2)).fadeIn();
           this.step++;
         }
       }
       else if(this.step === 1){
         if(action === "step"){
           $("#step"+(this.step+1)).fadeOut();
-          $("#step"+(this.step+2)+"-"+this.style).fadeIn();
+            $("#step"+(this.step+2)+"-"+this.style).fadeIn();
           this.step++;
         }
         else if(action === "back"){
           $("#step"+(this.step+1)).fadeOut();
-          $("#step"+(this.step)).fadeIn();
+            $("#step"+(this.step)).fadeIn();
           this.step--;
         }
       }
       else if(this.step < 4){
         if(action === "back"){
           $("#step"+(this.step+1)+"-"+this.style).fadeOut();
-          $("#step"+(this.step)+"-"+this.style).fadeIn();
+            $("#step"+(this.step)+"-"+this.style).fadeIn();
           this.step--;
         }
         else if(action === "step"){
           $("#step"+(this.step+1)+"-"+this.style).fadeOut();
-          $("#step"+(this.step+2)+"-"+this.style).fadeIn();
+            $("#step"+(this.step+2)+"-"+this.style).fadeIn();
           this.step++;
         }
       }
       this.proAni(action);
+    },
+    checkUserIp:function (){
+      $("#step1").fadeOut();
+      axios.post("/api/user/queryUserIp",Qs.stringify({'userName':this.userName}))
+      .then(res =>{
+        this.userIp = res.data.data;
+      })
+      .catch(err =>{
+        console.error(err);
+      })
+      setTimeout(()=>{
+        $("#step-userIp").fadeIn();
+      },400)
+
+    },
+    backToMain:function (){
+      $("#step-userIp").fadeOut();
+      setTimeout(()=>{
+        $("#step1").fadeIn();
+      },400)
+
     },
     resetMail:function(){
       this.style = "mail";
@@ -335,6 +379,8 @@ export default {
   box-shadow: 2px 2px 5px #000;
   border-radius: 30px 30px 30px 30px;
   padding: 50px 50px 50px 50px;
+  position: fixed;
+  z-index: -1;
 }
 
 .confirmBox{
@@ -354,7 +400,7 @@ export default {
 }
 
 
-.contain #step2,#step3-mail,#step3-password,#step4-mail,#step4-password,#step5-mail,#step5-password{
+.contain #step-userIp, #step2,#step3-mail,#step3-password,#step4-mail,#step4-password,#step5-mail,#step5-password{
   margin-top: 20px;
   display: none;
 }
