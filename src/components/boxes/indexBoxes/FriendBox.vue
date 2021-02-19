@@ -1,6 +1,6 @@
 <template>
   <div class="friend-box">
-    <button class="btn btn-success" @click="fun"><i class="layui-icon layui-icon-refresh"></i>  </button>
+    <button class="btn btn-success" @click="fun"><i class="layui-icon layui-icon-refresh"></i>刷新  </button>
     <div class="layui-tab friend-info">
       <ul class="layui-tab-title">
         <li class="layui-this">关注</li>

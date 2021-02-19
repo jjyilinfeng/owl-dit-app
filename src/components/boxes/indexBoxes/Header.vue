@@ -6,7 +6,7 @@
     <li class="layui-nav-item">
       <div class="navbar-form navbar-left" role="search" style="margin: 0">
         <div class="form-group">
-          <input type="text" v-model="searchWord" @focus="showSearchBox" class="form-control" placeholder="Search">
+          <input type="text" v-model="searchWord"  @focus="showSearchBox" class="form-control" placeholder="Search">
         </div>
         <button type="button" @click="search" class="btn btn-success">
           <span class="glyphicon glyphicon-search"></span>    搜索
@@ -28,11 +28,11 @@
         <i class="layui-icon">&#xe667;</i>消息
       </a>
       <dl class="layui-nav-child" style="padding: 10px">
-        <dd><a>收到的赞
-          <span v-show="unReadInfo['unReadPraise']>0" class="layui-badge layui-bg-orange" style="right: -12px">{{ unReadInfo['unReadPraise'] }}</span>
+        <dd><a @click="showMessageBox" data-msg-type="收到的赞">收到的赞
+          <span  v-show="unReadInfo['unReadPraise']>0" class="layui-badge layui-bg-orange" style="right: -12px">{{ unReadInfo['unReadPraise'] }}</span>
         </a></dd>
-        <dd><a>回复消息</a><span v-show="unReadInfo['unReadComment']>0" class="layui-badge layui-bg-orange" style="right: -12px">{{ unReadInfo['unReadComment'] }}</span></dd>
-        <dd><a>留言板</a><span class="layui-badge layui-bg-orange" style="right: -12px">99+</span></dd>
+        <dd><a @click="showMessageBox" data-msg-type="回复消息">回复消息</a><span v-show="unReadInfo['unReadComment']>0" class="layui-badge layui-bg-orange" style="right: -12px">{{ unReadInfo['unReadComment'] }}</span></dd>
+        <dd><a @click="showMessageBox" data-msg-type="留言板">留言板</a><span class="layui-badge layui-bg-orange" style="right: -12px">99+</span></dd>
       </dl>
     </li>
     <li class="layui-nav-item"><a @click="showFriendBox"><i class="layui-icon">&#xe612;</i>好友</a></li>
@@ -41,6 +41,7 @@
       <a><i class="layui-icon">&#xe716;</i>设置</a>
       <dl class="layui-nav-child" style="padding: 10px">
         <dd><a @click="showSetBGI">设置背景图</a></dd>
+        <dd><a @click="showSetBGM">设置背景音乐</a></dd>
         <dd>
           <div class="demo-box-content" @click="switchShowBgi">
             <span class="switch-font">展示首页</span>
@@ -70,7 +71,7 @@ export default {
       switches:{
         showBgiSwitch:false
       },
-      searchWord:"",
+      searchWord:""
     }
   },
   mounted() {
@@ -116,9 +117,16 @@ export default {
     showFriendBox(){
       this.$emit("showFriendBox","展示朋友页");
     },
+    showMessageBox(ev){
+      this.$emit("showMessageBox",$(ev.target).attr("data-msg-type"));
+    },
     showSetBGI(){
       this.$emit("showSetBGI","设置背景图");
     },
+    showSetBGM(){
+      this.$emit("showSetBGM","设置背景图");
+    },
+
     search:function(){
       this.$store.commit("changeSearchWord",this.searchWord)
       this.$emit("search",this.searchWord);
@@ -137,15 +145,29 @@ export default {
   },
   computed:{
     unReadInfo(){
-      let pra=this.$store.state.unReadInfo['unReadPraise'].length,
-          com=this.$store.state.unReadInfo['unReadComment'].length;
+      let pra=this.$store.state.unReadInfo['unReadPraise'],
+          com=this.$store.state.unReadInfo['unReadComment'];
 
-      pra>99?pra='99+':pra;
-      com>99?com='99+':com;
+      let praC = 0, comC = 0;
+
+      for (let i = 0; i < pra.length; i++) {
+        if(pra[i]['ditAttention'] === 1){
+          praC++;
+        }
+      }
+
+      for (let i = 0; i < com.length; i++) {
+        if(com[i]['ditAttention'] === 1){
+          comC++;
+        }
+      }
+
+      praC>99?pra='99+':praC;
+      comC>99?com='99+':comC;
 
       return{
-        'unReadPraise':pra,
-        'unReadComment':com
+        'unReadPraise':praC,
+        'unReadComment':comC
       }
     }
   }

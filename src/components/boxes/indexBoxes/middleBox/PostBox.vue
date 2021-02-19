@@ -1,7 +1,7 @@
 <template>
   <div class="PostBox" style="text-align: left">
     <span class="dit-font">记录一下好心情
-    <i class="layui-icon layui-icon-face-smile" style="color: red"></i>  </span>
+    <i class="layui-icon layui-icon-face-smile"></i>  </span>
     <form class="layui-form">
       <div class="layui-form-item">
         <label for="dit"></label>
@@ -88,7 +88,29 @@ export default {
 }
 
 .dit-font{
-  color: #3F3F3F;
-  font-size: 18px;
+  display: inline-block;
+  position: relative;
+  padding: 0 20px;
+  height: 30px;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  color: #FFFFFF;
+  font-size: 20px;
+  left: -28px;
+  background-color: rgb(255, 0, 98);
+
 }
+
+.dit-font:before {
+  height: 0;
+  width: 0;
+  border-bottom: 8px solid rgb(100,20,20);
+  border-left: 8px solid transparent;
+  top: -8px;
+  left: 0;
+  content: "";
+  position: absolute;
+}
+
+
 </style>

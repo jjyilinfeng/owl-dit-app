@@ -79,7 +79,7 @@
                 <div class="dit-message">
                   <span v-html="dit.ditMessage"/>
                 </div>
-                <button class="btn btn-info btn-sm" style="margin-left: 45%;">点击查看详细</button>
+                <button class="btn btn-info btn-sm" @click="showDitDetail(dit['ditUuid'])" style="margin-left: 45%;">点击查看详细</button>
               </div>
               <div class="search-page" id="search-dit-page"></div>
               <div id="setColor" style="float: right;bottom: 5%"></div>
@@ -225,7 +225,6 @@ export default {
 
     },
     searchUser(searchWord){
-
       $("#user-found").css("display","none")
       $("#user-not-found").fadeOut(200);
       $(".loading-item").fadeIn();
@@ -238,7 +237,6 @@ export default {
         this.searchInfo['userNameSearch'] = res.data.data;
         $(".loading-item").fadeOut();
         setTimeout(()=>{
-
           if(res.data.data.length === 0){
             $("#user-not-found").fadeIn();
           }
@@ -252,7 +250,6 @@ export default {
       })
     },
     searchDits(searchWord){
-
       if(searchWord === ''){
         return;
       }
@@ -264,7 +261,7 @@ export default {
             this.$emit("searchOver","搜索完毕");
             let count;
             if(res.data.data.length > 0){
-              count = res.data.data.length;
+              count = res.data.data[0]['count'];
             }
             else{
               count = 0;
@@ -322,6 +319,9 @@ export default {
     },
     showDitUserInfo:function (userName){
       this.$emit("showDitUserInfo",userName);
+    },
+    showDitDetail(uuid){
+      this.$emit("showDitDetail",uuid);
     },
     transDate: function (timestamp) {
       let nowDate = new Date();

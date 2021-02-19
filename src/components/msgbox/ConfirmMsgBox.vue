@@ -1,6 +1,9 @@
 <template>
   <div class="MsgBox">
     <div class="MsgBoxHead">
+      <div class="close-box" style="float: right">
+        <i class="layui-icon layui-icon-close close-icon" @click="cancel" style="font-size: 18px"></i>
+      </div>
       <span>
         {{titleMsg}}
       </span>
@@ -78,5 +81,20 @@ export default {
   position: relative;
   text-align: right;
   padding: 14px;
+}
+
+.close-icon{
+  transition: all 0.2s ease-in-out;
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+}
+
+.close-box:hover .close-icon{
+  transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
 }
 </style>

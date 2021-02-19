@@ -3,9 +3,9 @@
   <div class="FriendBox" style="text-align: left">
     <button class="btn btn-success" @click="fun"  style="display: none">刷新</button>
   <div class="friend-box-header">
-    <span class="dit-font" v-if="showType==='friend' && visitedType==='self'">看看朋友们都在聊什么</span>
-    <span class="dit-font" v-else-if="showType==='self'&& visitedType==='self'">这里是你自己发送的Dit</span>
-    <span class="dit-font" v-else>这里是你{{visitedName}}发送的Dit</span>
+    <span class="dit-font" v-if="showType==='friend' && visitedType==='self'">看看朋友们都在聊什么<i class="layui-icon layui-icon-dialogue" style="font-size: 20px"></i> </span>
+    <span class="dit-font" v-else-if="showType==='self'&& visitedType==='self'">这里是你自己发送的Dit<i class="layui-icon layui-icon-dialogue" style="font-size: 20px"></i></span>
+    <span class="dit-font" v-else>这里是{{visitedName}}发送的Dit<i class="layui-icon layui-icon-dialogue" style="font-size: 20px"></i></span>
     <div class="friend-switch" style="float: right">
       <div :class="['demo-box-content animate__animated',visitedType==='self'?'animate__zoomIn':'animate__zoomOut']"
              id="ditSwitch" @click="switchSelf">
@@ -17,16 +17,16 @@
   </div>
   <div :class="['dit-Box animate__animated',ditBoxAnimateFlag?'animate__zoomIn animate__delay-1s':'animate__zoomOut']"
        v-for="(dit,idx) in userAllDit" :id="'dit-'+idx">
-      <div class="dit-header">
-        <img class="dit-userFace" @click="showUserFace(dit['userFaceUuid'])" :src="'/api/static/img/userFace/'+dit['userFaceUuid']" :alt="dit['ditUserName']"/>
-        <div class="dit-info">
-          <a @click="showDitUserInfo(dit['ditUserName'])" class="dit-userName">
-            <span v-if="dit['userNickName']!==''">{{dit['userNickName']}}</span>
-            <span v-else>{{dit['userName']}}</span>
-          </a>
-          <span class="dit-dateTime">{{dit['ditDateTime']}}</span>
-        </div>
+    <div class="dit-header">
+      <img class="dit-userFace" @click="showUserFace(dit['userFaceUuid'])" :src="'/api/static/img/userFace/'+dit['userFaceUuid']" :alt="dit['ditUserName']"/>
+      <div class="dit-info">
+        <a @click="showDitUserInfo(dit['ditUserName'])" class="dit-userName">
+          <span v-if="dit['userNickName']!==''">{{dit['userNickName']}}</span>
+          <span v-else>{{dit['userName']}}</span>
+        </a>
+        <span class="dit-dateTime">{{dit['ditDateTime']}}</span>
       </div>
+    </div>
     <div class="dit-message">
       <span class="dit-msg" v-html="dit.ditMessage"/>
     </div>
@@ -51,23 +51,27 @@
     <div class="dit-footer-comment"  style="margin-left: 20px;margin-top: 20px;">
       <div class="comment" v-for="ditComment in dit['ditComment']">
         <img :src="'/api/static/img/userFace/'+ditComment['userFaceUuid']" :alt="ditComment['ditCommentUserName']">
-        <a v-if="ditComment['userNickName']!==''">&nbsp;{{ditComment['userNickName']}} &nbsp;</a>
-        <a v-if="ditComment['userNickName']===''">&nbsp;{{ditComment['ditCommentUserName']}} &nbsp;</a>
-        <span>说:{{ditComment['ditCommentMessage']}}</span>
-        <span>  {{ditComment['ditDateTime']}}</span>
+        <span @click="showDitUserInfo(ditComment['ditCommentUserName'])">
+          <a v-if="ditComment['userNickName']!==''">&nbsp;{{ditComment['userNickName']}} &nbsp;</a>
+          <a v-if="ditComment['userNickName']===''">&nbsp;{{ditComment['ditCommentUserName']}} &nbsp;</a>
+        </span>
+
+        <span>:{{ditComment['ditCommentMessage']}}</span>
+        <span style="margin-left: 10px;color: gray">  {{transDate(ditComment['ditDateTime'])}}</span>
+        <span>&nbsp;&nbsp;<i class="layui-icon layui-icon-delete" v-show="ditComment['ditCommentUserName']===userName" @click="deleteComment(ditComment['ditCommentId'])" ></i></span>
       </div>
       <div class="send-comment animate__animated" :id="'dit-comment-'+idx" style="display: none;margin-top: 20px">
         <label>
           <input  :class="['form-control','form-send-comment']" v-model="sendCommentMsg" type="text" placeholder="说点什么吧..">
         </label>
         <button class="btn btn-info" @click="commentDit(dit,idx)">
-          <i class="layui-icon">&#xe609;</i>
-          发送</button>
+          <i class="layui-icon">&#xe609;</i>发送
+        </button>
       </div>
     </div>
   </div>
   <div class="footer" style="text-align: center">
-    <span class="dit-font">再怎么拉也没有啦！</span>
+    <span class="dit-foot-font">再怎么拉也没有啦！</span>
   </div>
 
 </div>
@@ -118,8 +122,7 @@ export default {
         if((this.page === '1' && newName === 'refresh')||newName === 'delete'){
           setTimeout(()=>{
             this.getAllDit(this.userName);
-          },600)
-
+          },200)
           if(this.showType === 'self'){
             $("#ditSwitch").click();
           }
@@ -167,6 +170,7 @@ export default {
 
     showType:{
       handler(newName){
+        this.heightReSet();
         switch (newName){
           case 'self':
             this.getSelfDit(this.userName);
@@ -259,7 +263,6 @@ export default {
       if(this.page === "1"){
         this.ditBoxAnimateFlag = false;
       }
-
       let _this = this;
       axios.post("/api/dit/getAllDit", Qs.stringify({"userName": ditUser,"page":this.page}))
           .then(res => {
@@ -295,6 +298,9 @@ export default {
     },
     deleteDit:function(event){
       this.$emit("deleteDit",$(event.target).parent().attr("data-ditUuid"));
+    },
+    deleteComment(id){
+      this.$emit("deleteComment",id);
     },
     praiseJug(dit){
       dit = dit['ditPraise'];
@@ -400,9 +406,27 @@ export default {
 }
 
 .dit-font{
-  color: #3F3F3F;
-  font-size: 18px;
+  display: inline-block;
+  position: relative;
+  padding: 0 20px;
+  height: 30px;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  color: #FFFFFF;
+  font-size: 20px;
+  left: -28px;
+  background-color: #3e8f3e;
+}
 
+.dit-font:before {
+  height: 0;
+  width: 0;
+  border-bottom: 8px solid rgb(20,100,20);
+  border-left: 8px solid transparent;
+  top: -8px;
+  left: 0;
+  content: "";
+  position: absolute;
 }
 
 .dit-Box{
@@ -411,8 +435,8 @@ export default {
   margin-top: 20px;
   padding : 16px 0;
   border-radius: 10px;
-  border: gray 1px solid;
-  background-color: rgba(255,255,255,0.4);
+  box-shadow: #0f0f0f 1px 1px 3px;
+  background-color: rgba(255,255,255,1);
 }
 
 .dit-Box.animate__animated.animate__zoomIn{
