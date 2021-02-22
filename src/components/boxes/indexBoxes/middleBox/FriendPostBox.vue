@@ -1,7 +1,7 @@
 <template>
 
   <div class="FriendBox" style="text-align: left">
-    <button class="btn btn-success" @click="fun"  style="display: none">刷新</button>
+    <button class="btn btn-success" @click="fun"  style="display: block;position:absolute;left: 45%">刷新</button>
   <div class="friend-box-header">
     <span class="dit-font" v-if="showType==='friend' && visitedType==='self'">看看朋友们都在聊什么<i class="layui-icon layui-icon-dialogue" style="font-size: 20px"></i> </span>
     <span class="dit-font" v-else-if="showType==='self'&& visitedType==='self'">这里是你自己发送的Dit<i class="layui-icon layui-icon-dialogue" style="font-size: 20px"></i></span>
@@ -28,7 +28,13 @@
       </div>
     </div>
     <div class="dit-message">
-      <span class="dit-msg" v-html="dit.ditMessage"/>
+      <span class="dit-msg" v-html="dit.ditMessage" />
+      <div style="margin-top: 20px">
+        <video height="240" controls="controls" v-if="dit['ditVideoUuid'] !== undefined && dit['ditVideoUuid'] !== ''">
+          <source :src="'/api/static/video/ditVideo/'+dit['ditVideoUuid']" type="video/mp4" />
+        </video>
+      </div>
+
     </div>
     <div class="dit-op" :data-ditIdx="idx" :data-ditUuid="dit['ditUuid']" :data-ditPraise="dit['ditPraise']" :id="'dit-'+idx">
       <i class="layui-icon layui-icon-praise" @click="praiseDit" :style="praiseJug(dit)"></i>
@@ -49,7 +55,7 @@
       </span>
     </div>
     <div class="dit-footer-comment"  style="margin-left: 20px;margin-top: 20px;">
-      <div class="comment" v-for="ditComment in dit['ditComment']">
+      <div class="comment" v-for="ditComment in dit['ditComment'].slice(0,3)">
         <img :src="'/api/static/img/userFace/'+ditComment['userFaceUuid']" :alt="ditComment['ditCommentUserName']">
         <span @click="showDitUserInfo(ditComment['ditCommentUserName'])">
           <a v-if="ditComment['userNickName']!==''">&nbsp;{{ditComment['userNickName']}} &nbsp;</a>
@@ -60,6 +66,10 @@
         <span style="margin-left: 10px;color: gray">  {{transDate(ditComment['ditDateTime'])}}</span>
         <span>&nbsp;&nbsp;<i class="layui-icon layui-icon-delete" v-show="ditComment['ditCommentUserName']===userName" @click="deleteComment(ditComment['ditCommentId'])" ></i></span>
       </div>
+      <div style="margin-left: 45%" v-if="dit['ditComment'].length>3">
+        <a @click="showDitDetail(dit['ditUuid'])"><span >查看更多{{dit['ditComment'].length-3}}条信息</span></a>
+      </div>
+
       <div class="send-comment animate__animated" :id="'dit-comment-'+idx" style="display: none;margin-top: 20px">
         <label>
           <input  :class="['form-control','form-send-comment']" v-model="sendCommentMsg" type="text" placeholder="说点什么吧..">
@@ -107,11 +117,14 @@ export default {
     page:{
       handler(newName, OldName) {
         if(newName !== OldName){
-          if(this.showType === 'friend'){
+          if(this.showType === 'friend' && this.visitedType === 'self'){
             this.getAllDit(this.userName);
           }
-          if(this.showType === 'self'){
+          else if(this.showType === 'self' && this.visitedType === 'self'){
             this.getSelfDit(this.userName);
+          }
+          else if(this.visitedType === 'friend'){
+            this.getSelfDit(this.visitedName);
           }
         }
       },
@@ -131,6 +144,7 @@ export default {
     },
     visitedType:{
       handler(newName) {
+        this.$emit("setPage","1");
         if(newName === 'friend'){
           //console.log(newName);
           this.heightReSet();
@@ -356,6 +370,9 @@ export default {
     },
     showDitUserInfo:function (userName){
       this.$emit("showDitUserInfo",userName);
+    },
+    showDitDetail(uuid){
+      this.$emit("showDitDetail",uuid);
     },
     switchInit(){
       //开关初始

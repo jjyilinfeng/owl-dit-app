@@ -76,6 +76,7 @@ export default {
   name: "SetBackGroundMusicBox",
   props:{
     userName:String,
+    refreshBGMListFlag:Boolean,
   },
   data() {
     return {
@@ -89,7 +90,12 @@ export default {
     }
   },
   watch:{
-
+    refreshBGMListFlag(newName){
+      if(newName === true){
+        this.getBackGroundMusic(this.userName,1,5);
+        this.$emit("refreshBGMListFlagEnd","刷新结束");
+      }
+    }
   },
   mounted() {
     setTimeout(()=>{
@@ -111,9 +117,13 @@ export default {
           var files = this.files = obj.pushFile();
           obj.preview(function (index) {
             let fileName = files[index].name;
-            _this.bgmName = fileName.split("-")[1].replace(/^\s+|\s+$/g,"");
-            _this.bgmName = _this.bgmName.substring(0,_this.bgmName.lastIndexOf("."));
-            _this.bgmArtist = fileName.split("-")[0].replace(/^\s+|\s+$/g,"");
+            if(_this.bgmArtist === ""){
+              _this.bgmArtist = fileName.substring(0,fileName.indexOf("-"));
+            }
+            if(_this.bgmName === ""){
+              _this.bgmName = fileName.substring(fileName.indexOf("-")+1);
+              _this.bgmName = _this.bgmName.substring(0,_this.bgmName.indexOf("."));
+            }
           })
         }
         ,progress: function(n, elem){
@@ -186,9 +196,10 @@ export default {
         })
     },
     deleteBgm(id){
-      this.$emit("deleteBgm",id);
+      this.$emit("deleteBgm",id+"");
     },
     refreshTable(){
+      this.$emit("refreshMusicList","刷新音乐列表")
       this.getBackGroundMusic(this.userName,1,5);
     },
     showHidPlayer(){

@@ -23,11 +23,10 @@ export default {
       upload.render({
         elem: '#uploadBGI'
         ,url: '/api/userIndex/userBackGroundUpload' //改成您自己的上传接口
-
+        ,size: 20000
         ,done: function(res){
           let Uuid = res.data;
           layer.msg('上传成功',{'icon':6});
-          console.log(Uuid);
           axios.post("/api/userIndex/updateBackGroundImg",Qs.stringify({'userName':_this.userName,"UUID":Uuid}))
           _this.$emit("changeBackGround",Uuid)
         }

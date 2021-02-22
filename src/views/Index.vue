@@ -13,14 +13,16 @@
 <!--  展示界面-->
   <Header :class="['Header','animate__animated', HeaderAnimateFlag?'animate__flipInX':'animate__flipOutX']"
           v-show="HeaderDisFlag===true"
-          :userName="userName"  :user-face-src="userFaceSrc"
+          :userName="userName"  :user-face-src="userFaceSrc" :visitedType="visitedType"
           @showBgi="showBgi" @showBoxes="showBoxes" @showUserInfoBox="showUserInfoBox" @showMainIndex="showMainIndex"
           @showUserSafeInfoBox="showUserSafeInfoBox" @showSearchBox="showSearchBox" @search="search" @showFriendBox="showFriendBox"
           @showSetBGI="showSetBGI" @showSetBGM="showSetBGM" @showMessageBox="showMessageBox"
+          @returnMainIndex="returnMainIndex" @logout="logout"
   />
   <LeftBox :class="['LeftBox','animate__animated', LeftBoxAnimateFlag?'animate__slideInLeft':'animate__slideOutLeft']"
            :style="{'display':LeftBoxDisFlag?'block':'none','margin-left':LeftBoxMarginLeft+'px'}"
            :user-name="userName" :visited-name="visitedName" :visited-type="visitedType" :user-face-src="userFaceSrc"
+           :leftBoxRefreshFlag="leftBoxRefreshFlag"
   />
   <div class="middleBox">
     <PostBox :class="['PostBox','animate__animated', PostBoxAnimateFlag?'animate__zoomIn':'animate__zoomOut']"
@@ -34,12 +36,15 @@
                      :visited-name="visitedName" :visited-type="visitedType"
                      @refreshEnd="refreshEnd" @addPage="addPage" @deleteDit="deleteDit" @deleteComment="deleteComment"
                      @showDitUserFace="showDitUserFace" @showDitUserInfo="showDitUserInfo"
-                     @showDitImg="showDitImg"
+                     @showDitImg="showDitImg" @showDitDetail="showDitDetail"
                      @setPage="setPage"
     />
   </div>
   <RightBox :class="['RightBox','animate__animated', RightBoxAnimateFlag?'animate__slideInRight':'animate__slideOutRight']"
-            v-show="RightBoxDisFlag"/>
+            v-show="RightBoxDisFlag" :visited-type="visitedType" :visited-name="visitedName" :user-name="userName"
+            @showSetImage="showSetImage" @showIndexImage="showIndexImage" :indexShowImageFlag="indexShowImageFlag"
+            @indexShowImageFlagEnd="indexShowImageFlag=false" @crateArticle="showCreateArticleBox"
+  />
 
 
   <div  v-show="APlayerDisFlag" id="aPlayer"></div>
@@ -49,7 +54,7 @@
   <user-information-box :class="['UserInfoBox','animate__animated', UserInfoBoxAnimateFlag?'animate__zoomIn':'animate__zoomOut']"
                         :style="{'display':UserInfoBoxDisFlag?'block':'none','margin-left':UserInfoBoxMarginLeft+'px'}"
                         :user-information-new="userInfo" :user-face-src="userFaceSrc"
-                        @updateUserFaceSrc="updateUserFaceSrc" @imgSet="imgSet"
+                        @updateUserFaceSrc="updateUserFaceSrc" @imgSet="imgSet" @leftBoxRefresh="leftBoxRefreshFlag=true"
   />
 
   <user-safe-information-box :class="['UserSafeInfoBox','animate__animated', UserSafeInfoBoxAnimateFlag?'animate__zoomIn':'animate__zoomOut']"
@@ -86,12 +91,23 @@
                @changeMsgBoxType="changeMsgBoxType" @showUserCard="showDitUserInfo" @showDitDetails="showDitDetail"
                />
 
+  <create-article :class="['createArticleBox','animate__animated',CreateArticleBoxAnimateFlag?'animate__zoomIn':'animate__zoomOut']" v-show="CreateArticleBoxDisFlag"
+                  :user-name="userName"
+  />
+  <set-index-image-box :class="['SetIndexImgBox','animate__animated',SetIndexImgBoxAnimateFlag?'animate__zoomIn':'animate__zoomOut']" v-show="SetIndexImgBoxDisFlag"
+                       :user-name="userName" :indexImageRefreshFlag="indexImageFlag"
+                       @showIndexImage="showIndexImage" @deleteIndexImage="deleteIndexImage"  @indexImageRefreshOver="indexImageFlag=false"
+                        @refreshRightBoxImage="indexShowImageFlag=true"
+  />
+
+
   <set-background-img-box :class="['setBGIBox','animate__animated',setBGIBoxAnimateFlag?'animate__zoomIn':'animate__zoomOut']" v-show="setBGIBoxDisFlag"
                           :user-name="userName" @changeBackGround="changeBackGroundImg"
                          />
 
   <set-back-ground-music-box :class="['setBGMBox','animate__animated',setBGMBoxAnimateFlag?'animate__zoomIn':'animate__zoomOut']" v-show="setBGMBoxDisFlag"
-                             :user-name="userName" @deleteBgm="deleteBgm" @showPlayer="showPlayer" @hidePlayer="hidePlayer"
+                             :user-name="userName" @deleteBgm="deleteBgm" @showPlayer="showPlayer" @hidePlayer="hidePlayer" @refreshMusicList="refreshMusicList"
+                             :refreshBGMListFlag="refreshBGMListFlag"  @refreshBGMListFlagEnd="refreshBGMListFlag=false"
   />
 <!--  隐藏界面END-->
 
@@ -121,9 +137,13 @@ import SetBackgroundImgBox from "@/components/msgbox/SetBackgroundImgBox";
 import SetBackGroundMusicBox from "@/components/boxes/indexBoxes/SetBackGroundMusicBox";
 import MessageBox from "@/components/boxes/indexBoxes/MessageBox";
 import DitDetailsBox from "@/components/boxes/indexBoxes/ditDetailsBox";
+import SetIndexImageBox from "@/components/boxes/indexBoxes/SetIndexImageBox";
+import CreateArticle from "@/components/boxes/indexBoxes/CreateArticle";
 export default {
   name: "Index",
   components: {
+    CreateArticle,
+    SetIndexImageBox,
     DitDetailsBox,
     MessageBox,
     SetBackGroundMusicBox,
@@ -144,7 +164,7 @@ export default {
       UserInfoBoxMarginLeft:"",
 
       //页面展示风格
-      AllBoxes:["RightBox", "FriendPostBox", "PostBox", "LeftBox", "Header","UserInfoBox","UserSafeInfoBox","ImgSet","SearchBox","FriendBox","MsgBox","setBGIBox","setBGMBox","ditDetailBox"],
+      AllBoxes:["RightBox", "FriendPostBox", "PostBox", "LeftBox", "Header","UserInfoBox","UserSafeInfoBox","ImgSet","SearchBox","FriendBox","MsgBox","setBGIBox","setBGMBox","ditDetailBox","SetIndexImgBox","CreateArticleBox"],
       MainIndex:["LeftBox","RightBox","PostBox","FriendPostBox"],
 
       HideBoxes:[],
@@ -180,6 +200,10 @@ export default {
       MsgBoxAnimateFlag:false,
       ditDetailBoxAnimateFlag:false,
       ditDetailBoxDisFlag:false,
+      SetIndexImgBoxAnimateFlag:false,
+      SetIndexImgBoxDisFlag:false,
+      CreateArticleBoxDisFlag:false,
+      CreateArticleBoxAnimateFlag:false,
 
 
       confirmMsgBoxAnimateFlag:false,
@@ -224,6 +248,18 @@ export default {
 
       //DitFlag
       refreshDitFlag:'unRefresh',
+
+      //RightBoxImageFlag
+      indexShowImageFlag:false,
+
+      //indexImageFlag
+      indexImageFlag:false,
+
+      //刷新bgm列表flag
+      refreshBGMListFlag:false,
+
+      //刷新左边的盒子flag
+      leftBoxRefreshFlag:false,
 
       //页数
       ditsPage:"1",
@@ -301,6 +337,12 @@ export default {
       this.boxSwitch(this.getShowBoxes(), ["UserSafeInfoBox"]);
     },
     showMainIndex:function (){
+      this.boxSwitch(this.getShowBoxes(), this.MainIndex);
+    },
+    showSetImage(){
+      this.boxSwitch(this.getShowBoxes(), ["SetIndexImgBox"])
+    },
+    returnMainIndex(){
       this.visitedType = 'self';
       this.getBackGroundImg(this.userName);
       this.ap.list.clear();
@@ -314,6 +356,9 @@ export default {
     },
     showFriendBox(){
       this.boxSwitch(this.getShowBoxes(),["FriendBox"])
+    },
+    showCreateArticleBox(){
+      this.boxSwitch(this.getShowBoxes(),["CreateArticleBox"])
     },
     showMessageBox(data){
       axios.post("/api/message/readMessage",Qs.stringify({'userName':this.userName}))
@@ -355,6 +400,13 @@ export default {
       this.imgBiggerType = 'ditImg';
       this.imgBiggerSrc = uuid;
     },
+    showIndexImage(uuid){
+      this.boxSwitch([], ["ImgSet"]);
+      this.closeBoxType = "ImgSet";
+      this.ShadowSetDisFlag = true;
+      this.imgBiggerType = 'userImg';
+      this.imgBiggerSrc = uuid;
+    },
     imgSet:function (){
       this.boxSwitch([], ["ImgSet"]);
       this.ShadowSetDisFlag = true;
@@ -375,7 +427,6 @@ export default {
       this.boxSwitch([type], []);
     },
     closeDetail(){
-      console.log("in");
       this.boxSwitch(["ditDetailBox"],this.HideBoxes);
       this.HideBoxes = [];
     },
@@ -404,6 +455,14 @@ export default {
       this.ShadowSetDisFlag = true;
       this.boxSwitch([], ["confirmMsgBox"]);
       this.confirmBoxData = data;
+    },
+    deleteIndexImage(uuids){
+      this.messageBoxFunction = this.deleteIndexImageFunction;
+      this.confirmBoxMsg = "确认要删除你选中的这些图片吗？";
+      this.confirmBoxTittle = "删除图片";
+      this.ShadowSetDisFlag = true;
+      this.boxSwitch([], ["confirmMsgBox"]);
+      this.confirmBoxData = uuids;
     },
     closeConfirmMsgBox:function (){
       this.ShadowSetDisFlag = false;
@@ -469,8 +528,10 @@ export default {
       axios.post("/api/userIndex/queryBGM",Qs.stringify({'userName':userName}))
       .then(res =>{
         let data = res.data.data;
+        if(data.length > 0){
+          this.ap.list.add(data);
+        }
 
-        this.ap.list.add(data);
       })
       .catch(err =>{
         console.error(err);
@@ -528,6 +589,12 @@ export default {
     refreshEnd:function (){
       this.refreshDitFlag = 'unRefresh';
     },
+    refreshMusicList(){
+      if(this.visitedType === 'self'){
+        this.ap.list.clear();
+        this.getBackGroundMusic(this.userName);
+      }
+    },
     addPage:function (){
       this.ditsPage = parseInt(this.ditsPage)+1+"";
       this.refreshDitFlag = 'refresh';
@@ -539,7 +606,6 @@ export default {
 
     },
     deleteDitFunction:function (uuid){
-
       axios.post("/api/dit/deleteDit",Qs.stringify({'ditUuid':uuid}))
       .then(res =>{
         this.closeConfirmMsgBox();
@@ -575,10 +641,25 @@ export default {
         layui.use(['layer'],function () {
           layer.msg(data.message,{icon: data.code===200?6:5,time:2000, shade:0.4});
         })
+        this.refreshBGMListFlag = true;
       })
       .catch(err =>{
         console.error(err);
       })
+    },
+    deleteIndexImageFunction(data){
+      axios.post("/api/userIndex/deleteIndexImage",Qs.stringify({'uuids':data}))
+          .then(res =>{
+            this.closeConfirmMsgBox();
+            let data = res.data;
+            layui.use(['layer'],function () {
+              layer.msg(data.message,{icon: data.code===200?6:5,time:2000, shade:0.4});
+            })
+            this.indexImageFlag = true;
+          })
+          .catch(err =>{
+            console.error(err);
+          })
     },
     search:function(word){
       this.searchFlag = true;
@@ -606,6 +687,19 @@ export default {
         }
       }
       return params;
+    },
+    logout(){
+      this.showBgi();
+      setTimeout(()=>{
+        Cookie.remove("userName-idx");
+        this.$router.push({
+          name:"登录注册",
+          params:{
+            "message":"登出成功"
+          }
+        })
+      },1000)
+
     }
   },
   computed:{
@@ -633,6 +727,7 @@ export default {
   z-index: -1;
   float: left;
   margin-left: 50px;
+  margin-bottom: 30px;
 }
 
 
@@ -690,6 +785,21 @@ export default {
   position: fixed;
 }
 
+.SetIndexImgBox{
+  left: 0;
+  right: 0;
+  margin: auto;
+  z-index: -1;
+  position: absolute;
+}
+.createArticleBox{
+  left: 0;
+  right: 0;
+  margin: auto;
+  z-index: -1;
+  position: absolute;
+}
+
 .confirmMsgBox{
   left: 0;
   right: 0;
@@ -731,7 +841,7 @@ export default {
   top: 0;
   bottom: 0;
   margin: auto;
-  max-height: 90%;
+  max-height: 98%;
   max-width: 100%;
   position: fixed;
   z-index: 9999;

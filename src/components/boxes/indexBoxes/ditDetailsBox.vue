@@ -51,7 +51,7 @@
             <i class="layui-icon">&#xe609;</i>
             发送</button>
         </div>
-        <div id="dit-page" style="margin-left: 30%"></div>
+        <div id="dit-page" v-show="count > 5" style="margin: 0 auto"></div>
       </div>
     </div>
 
@@ -115,7 +115,13 @@ export default {
             , theme: '#1E9FFF'
             , limit: 5
             , jump: function (obj) {
-
+              axios.post("/api/dit/getDitByUuid",Qs.stringify({'ditUuid':uuid,'page':obj.curr,'limit':obj.limit}))
+                .then(res => {
+                  _this.ditInfo = res.data.data;
+                })
+                .catch(err =>{
+                  console.error(err)
+                })
             }
           });
         })

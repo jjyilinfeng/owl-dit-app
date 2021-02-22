@@ -1,5 +1,5 @@
 {
-  "name": "vue_projcet",
+  "name": "owl-dit",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -36,7 +36,7 @@
     "vue-router": "^4.0.0-0",
     "vue-schart": "^2.0.0",
     "vuex": "^4.0.0-0",
-    "webpack": "^4.0.0"
+    "webpack": "^4.29.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

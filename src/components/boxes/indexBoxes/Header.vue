@@ -1,8 +1,16 @@
 <template>
   <ul class="layui-nav" style="text-align: center">
 
-    <li class="layui-nav-item layui-this"><a @click="showMainIndex">
-      <i class="layui-icon">&#xe68e;</i>用户主页</a></li>
+    <li class="layui-nav-item layui-this">
+      <a v-if="visitedType==='self'" @click="showMainIndex">
+        <i class="layui-icon">&#xe68e;</i>
+        用户主页
+      </a>
+      <a v-if="visitedType==='friend'" @click="returnMainIndex">
+        <i class="layui-icon">&#xe68e;</i>
+        回到主页
+      </a>
+    </li>
     <li class="layui-nav-item">
       <div class="navbar-form navbar-left" role="search" style="margin: 0">
         <div class="form-group">
@@ -65,6 +73,7 @@ export default {
   props:{
     userName:String,
     userFaceSrc:String,
+    visitedType:String,
   },
   data() {
     return {
@@ -94,13 +103,8 @@ export default {
       console.log(this.$store.state.unReadInfo);
     },
     logOut:function (){
-      Cookie.remove("userName-idx");
-      this.$router.push({
-        name:"登录注册",
-        params:{
-          "message":"登出成功"
-        }
-      })
+      this.$emit("logout","登出")
+
     },
     showUserInfoBoxes:function(){
       this.$emit("showUserInfoBox","展示用户信息");
@@ -126,7 +130,9 @@ export default {
     showSetBGM(){
       this.$emit("showSetBGM","设置背景图");
     },
-
+    returnMainIndex(){
+      this.$emit("returnMainIndex","回到主页");
+    },
     search:function(){
       this.$store.commit("changeSearchWord",this.searchWord)
       this.$emit("search",this.searchWord);

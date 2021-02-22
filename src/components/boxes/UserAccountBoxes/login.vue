@@ -1,17 +1,17 @@
 <template>
   <div class="container">
     <div class="userAccounts-login">
-      <div class="login-header" style="padding-top: 10px">
-        <img src="@/assets/img/raw.png" style="width: 80%;" alt="头像">
+      <div style="text-align: left">
+        <img class="login-face" :src="'/api/static/img/userFace/'+userFaceUuid" style="" alt="头像">
       </div>
       <h2 class="form-signin-heading" style="text-align: left"><i class="glyphicon glyphicon-log-in"></i> 用户登录</h2>
-      <div class="form-group has-success has-feedback">
-        <label for="login-username"></label><input type="text" class="form-control" id="login-username" v-model="username" name="username" placeholder="在此输入用户名" autofocus>
-        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+      <div class="input-group">
+        <label for="login-username"></label><input type="text" class="form-control" id="login-username" v-model="username" @blur="getUserFace"  name="username" placeholder="在此输入用户名" autofocus>
+        <span class="glyphicon glyphicon-user input-group-addon"></span>
       </div>
-      <div class="form-group has-success has-feedback">
-        <input type="password" class="form-control" id="login-password" v-model="password" name="password" placeholder="在此输入密码" style="margin-top:10px;">
-        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      <div class="input-group" style="margin-top:10px;">
+        <label for="login-password"></label><input :type="passwordDisFlag?'text':'password'" class="form-control" id="login-password" v-model="password" name="password" placeholder="在此输入密码" >
+        <span :class="['glyphicon input-group-addon', passwordDisFlag?'glyphicon-eye-close':'glyphicon-eye-open']" @click="passwordDisFlag=!passwordDisFlag"></span>
       </div>
       <div class="checkbox" style="height: 20px;">
         <label style="float: left">
@@ -22,7 +22,8 @@
         </label>
       </div>
       <div style="text-align: center">
-        <button id="logSub" type="button" class="btn btn-success btn-lg" value="登录" @click="doLogin"
+        <button id="logSub" type="button" class="btn btn-success btn-lg" value="登录" data-loading-text="Loading..."
+                 @click="doLogin"
                 style="margin:auto">登入</button>
       </div>
     </div>
@@ -33,6 +34,7 @@
 import axios from "axios";
 import toastr from "toastr"
 import Cookie from "js-cookie"
+import Qs from 'qs/dist/qs'
 const messCode = [
   "A", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Z", "X", "C", "V", "B", "N", "M",
   "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -54,6 +56,9 @@ export default {
       password: "",
       rememberMe: false,
       checkAccount: true,
+
+      userFaceUuid:"default.png",
+      passwordDisFlag:false,
     }
   },/*数据*/
   component:{},/*自定义标签*/
@@ -121,6 +126,25 @@ export default {
     },
     jumpToRegister:function (){
       this.$emit("jumpToRegister","跳转到登录")
+    },
+    getUserFace(){
+      if(this.username === '' || this.username === undefined){
+        return;
+      }
+
+      axios.post("/api/user/getUserFace",Qs.stringify({'userName': this.username}))
+      .then(res =>{
+        let uuid = res.data.data;
+        if(uuid !== undefined && uuid !== null){
+          this.userFaceUuid = uuid;
+        }
+        else{
+          this.userFaceUuid = 'default.png';
+        }
+      })
+      .catch(err =>{
+        console.error(err);
+      })
     }
   },/*执行触发函数*/
 }
@@ -143,5 +167,12 @@ export default {
   border: 2px solid #24b679;
   border-radius: 50px;
   position: relative;
+}
+
+.login-face{
+  border: #1E9FFF 2px solid;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
 }
 </style>

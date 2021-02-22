@@ -109,6 +109,7 @@ export default {
           .then(res =>{
             if(res.data.code === 404){
               layer.msg("UUID注入失败",{icon: 5,time:2000, shade:0.4});
+              _this.$emit("leftBoxRefresh","刷新左边盒子");
             }
           })
           .catch(err =>{

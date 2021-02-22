@@ -1,4 +1,5 @@
 <template>
+
   <owl-blink-eyes id="owl-welcome"/>
   <div class="jumbotron">
     <div class="container">

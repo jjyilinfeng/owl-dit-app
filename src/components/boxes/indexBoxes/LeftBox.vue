@@ -76,6 +76,7 @@ export default {
     visitedType:String,
     visitedName:String,
     userFaceSrc:String,
+    leftBoxRefreshFlag:Boolean,
   },
   watch:{
     visitedType:{
@@ -98,7 +99,7 @@ export default {
       handler(newName, OldName) {
         this.getIndexInfo(this.userName);
       },
-    }
+    },
   },
   data() {
     return {
